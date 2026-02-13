@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Flights</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1100px; /* Slightly wider to accommodate new column */
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        h2 { margin-top: 0; color: #333; }
+
+        .back-link {
+            text-decoration: none;
+            color: #666;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .back-link:hover { color: #000; }
+
+        .filter-box {
+            background: #fafafa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            border: 1px solid #eee;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #333;
+            color: white;
+            text-align: left;
+            padding: 12px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover { background-color: #f9f9f9; }
+
+        #statusMsg {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    
+
+    <div class="container">
+        <a href="admin.html" class="back-link">← Back to Dashboard</a>
+        
+        <h2>Flight Registry</h2>
+
+        <div class="filter-box">
+            <span style="font-weight: bold; color:#555;">Filters:</span>
+            <input type="text" id="searchFlightNo" placeholder="Flight No">
+            <input type="text" id="searchOrigin" placeholder="Origin">
+            <input type="text" id="searchDest" placeholder="Destination">
+            <button onclick="clearFilters()">Clear</button>
+        </div>
+
+        <p id="statusMsg">Loading...</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Flight No</th>
+                    <th>Airline</th>
+                    <th>Route</th>
+                    <th>Departure</th>
+                    <th>Arrival</th> <th>Price</th>
+                </tr>
+            </thead>
+            <tbody id="flightTable"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let allFlights = []; 
+
+        fetch('../api/get_flight.php')
+        .then(res => res.json())
+        .then(data => {
+            allFlights = data;
+            filterFlights();
+        });
+
+        document.querySelectorAll('.filter-box input').forEach(el => {
+            el.addEventListener('keyup', filterFlights);
+        });
+
+        function filterFlights() {
+            const fNum = document.getElementById('searchFlightNo').value.toLowerCase();
+            const orig = document.getElementById('searchOrigin').value.toLowerCase();
+            const dest = document.getElementById('searchDest').value.toLowerCase();
+
+            const isSearching = (fNum !== '' || orig !== '' || dest !== '');
+
+            const filtered = allFlights.filter(f => {
+                return f.Flight_Number.toLowerCase().includes(fNum) &&
+                       f.Origin_Airport.toLowerCase().includes(orig) &&
+                       f.Destination_Airport.toLowerCase().includes(dest);
+            });
+
+            const dataToShow = isSearching ? filtered : allFlights;
+            const status = document.getElementById('statusMsg');
+            status.innerText = isSearching ? `Found ${dataToShow.length} matches` : `Showing all ${allFlights.length} flights`;
+
+            renderTable(dataToShow);
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('flightTable');
+            tbody.innerHTML = '';
+
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: #888;">No flights found.</td></tr>';
+                return;
+            }
+
+            data.forEach(f => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${f.Flight_ID}</td>
+                        <td><strong>${f.Flight_Number}</strong></td>
+                        <td>${f.Airline_Name}</td>
+                        <td>${f.Origin_Airport} ➝ ${f.Destination_Airport}</td>
+                        <td>${f.Departure_Time}</td>
+                        <td>${f.Arrival_Time}</td> <td>₹${f.Price}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function clearFilters() {
+            document.querySelectorAll('.filter-box input').forEach(input => input.value = '');
+            filterFlights(); 
+        }
+    </script>
+</body>
+</html>

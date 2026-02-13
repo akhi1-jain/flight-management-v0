@@ -1,0 +1,15 @@
+// Insert Test
+{
+    "flight_number": "AI-101",
+    "origin": "DEL",
+    "destination": "JFK",
+    "departure_time": "2026-11-01 02:00:00",
+    "arrival_time": "2026-11-01 16:00:00",
+    "tail_number": "VT-ALN",
+    "price": 85000.00
+}
+
+// Delete Test
+{
+    "flight_id": 1
+}

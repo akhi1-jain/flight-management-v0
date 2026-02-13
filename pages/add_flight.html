@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Flight - Admin</title>
+    <style>
+        /* THEME: GREY & WHITE (Consistent) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px; 
+            box-sizing: border-box;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            border: 1px solid #ddd;
+        }
+
+        h2 { text-align: center; margin-top: 0; color: #333; margin-bottom: 25px; font-weight: 700; }
+
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #555; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            font-size: 14px;
+        }
+
+        /* Combined Flight Number Field */
+        .flight-no-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .flight-no-group div { flex: 1; }
+        
+        /* Preview Field */
+        .preview-field {
+            background-color: #e9ecef;
+            border: 1px dashed #adb5bd;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #555; }
+
+        .back-link { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #666; font-size: 0.9em; }
+        #message { text-align: center; margin-top: 20px; font-size: 0.95em; }
+        .success { color: #28a745; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    
+
+    <div class="form-container">
+        <a href="admin.html" class="back-link">← Back to Dashboard</a>
+        <h2>Add New Flight</h2>
+        
+        <form id="addForm">
+            <div class="flight-no-group">
+                <div>
+                    <label>Airline (IATA)</label>
+                    <select id="iataSelect" required>
+                        <option value="">Select</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Number</label>
+                    <input type="number" id="serialInput" placeholder="e.g. 202" required>
+                </div>
+            </div>
+
+            <label>Final Flight Number (Generated)</label>
+            <input type="text" name="flight_number" id="finalFlightNo" class="preview-field" readonly>
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex:1;">
+                    <label>Origin</label>
+                    <select name="origin" id="originSelect" required><option value="">Loading...</option></select>
+                </div>
+                <div style="flex:1;">
+                    <label>Destination</label>
+                    <select name="destination" id="destSelect" required><option value="">Loading...</option></select>
+                </div>
+            </div>
+
+            <label>Departure Time</label>
+            <input type="datetime-local" name="departure_time" required>
+
+            <label>Arrival Time</label>
+            <input type="datetime-local" name="arrival_time" required>
+
+            <label>Aircraft</label>
+            <select name="tail_number" id="aircraftSelect" required><option value="">Loading...</option></select>
+
+            <label>Price (INR)</label>
+            <input type="number" step="0.01" name="price" placeholder="5000.00" required>
+
+            <button type="submit">Add Flight</button>
+        </form>
+        
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const iataSelect = document.getElementById('iataSelect');
+        const serialInput = document.getElementById('serialInput');
+        const finalInput = document.getElementById('finalFlightNo');
+
+        // Function to join IATA and Number
+        function updateFlightNo() {
+            const iata = iataSelect.value;
+            const serial = serialInput.value;
+            if(iata && serial) {
+                finalInput.value = `${iata}-${serial}`;
+            } else {
+                finalInput.value = "";
+            }
+        }
+
+        iataSelect.onchange = updateFlightNo;
+        serialInput.oninput = updateFlightNo;
+
+        window.onload = function() {
+            // Ensure get_form_options.php returns "airlines" as well!
+            fetch('../api/get_form_options.php')
+            .then(res => res.json())
+            .then(data => {
+                const iataDropdown = document.getElementById('iataSelect');
+                const origins = document.getElementById('originSelect');
+                const dests = document.getElementById('destSelect');
+                const aircrafts = document.getElementById('aircraftSelect');
+
+                // Populate Airlines
+                if(data.airlines) {
+                    data.airlines.forEach(al => {
+                        iataDropdown.innerHTML += `<option value="${al.IATA_Code}">${al.Airline_Name} (${al.IATA_Code})</option>`;
+                    });
+                }
+
+                // Populate Airports
+                origins.innerHTML = dests.innerHTML = '<option value="">Select Airport</option>';
+                data.airports.forEach(a => {
+                    const opt = `<option value="${a.Airport_Code}">${a.City} (${a.Airport_Code})</option>`;
+                    origins.innerHTML += opt;
+                    dests.innerHTML += opt;
+                });
+
+                // Populate Aircrafts
+                aircrafts.innerHTML = '<option value="">Select Aircraft</option>';
+                data.aircrafts.forEach(ac => {
+                    aircrafts.innerHTML += `<option value="${ac.Tail_Number}">${ac.Model}</option>`;
+                });
+            });
+        };
+
+        document.getElementById('addForm').onsubmit = function(e) {
+            e.preventDefault();
+            const msgBox = document.getElementById('message');
+            
+            fetch('../api/add_flight.php', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(res => res.json())
+            .then(data => {
+                msgBox.innerText = data.message;
+                msgBox.className = (data.status === 'success') ? 'success' : 'error';
+                if(data.status === 'success') this.reset();
+            });
+        };
+    </script>
+</body>
+</html>

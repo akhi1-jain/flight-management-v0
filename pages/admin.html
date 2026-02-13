@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BMSCE Flights</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR - Logo on the Right */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav .nav-links a { color: #ccc; text-decoration: none; margin-right: 20px; font-size: 0.9em; }
+        nav .nav-links a:hover { color: white; }
+        nav .logo { font-size: 1.5em; font-weight: bold; letter-spacing: 1px; }
+
+        .main-content { flex: 1; padding: 40px 20px; }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #ddd;
+        }
+        .stat-card h3 { margin: 0; font-size: 2.2em; color: #333; }
+        .stat-card p { margin: 5px 0 0; color: #777; font-size: 0.9em; font-weight: bold; text-transform: uppercase; }
+
+        /* QUICK ACTIONS */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .action-btn {
+            background: white;
+            padding: 20px;
+            text-decoration: none;
+            color: #333;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+        .action-btn:hover { background: #333; color: white; transform: translateY(-3px); }
+
+        /* FOOTER */
+        footer {
+            background-color: #f1f1f1;
+            padding: 40px 20px;
+            border-top: 1px solid #ddd;
+            margin-top: 40px;
+        }
+        .footer-title { text-align: center; font-weight: bold; margin-bottom: 25px; color: #555; }
+        .dev-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .dev-card {
+            background: white; padding: 15px; border-radius: 10px; width: 300px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .dev-card img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
+        .dev-info h4 { margin: 0; font-size: 0.95em; }
+        .dev-info p { margin: 2px 0; font-size: 0.75em; color: #666; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">BMSCE FLIGHTS</div>
+        <div class="nav-links">
+            <a href="../index.html">Logout</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="container">
+            <h2>Welcome, Admin</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3 id="count-flights">-</h3>
+                    <p>Flights</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="count-bookings">-</h3>
+                    <p>Bookings</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="count-passengers">-</h3>
+                    <p>Passengers</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="count-airlines">-</h3>
+                    <p>Airlines</p>
+                </div>
+            </div>
+
+            <h3>Quick Links</h3>
+            <div class="actions-grid">
+                <a href="add_flight.html" class="action-btn">Add</a>
+                <a href="get_flight.html" class="action-btn">View</a>
+                <a href="update_flight.html" class="action-btn">Update</a>
+                <a href="delete_flight.html" class="action-btn">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-title">Developed By</div>
+        <div class="dev-grid">
+            <div class="dev-card">
+                <img src="../assets/images/akhil.jpg" alt="Akhil">
+                <div class="dev-info">
+                    <h4>Akhil M Jain</h4>
+                    <p>USN: 1BM25MCA008-T</p>
+                    <p>akhilmjain.mca25@bmsce.ac.in</p>
+                </div>
+            </div>
+            <div class="dev-card">
+                <img src="../assets/images/debojyoti.jpeg" alt="Debojoti">
+                <div class="dev-info">
+                    <h4>Debojoti Bhattacharjee</h4>
+                    <p>USN: 1BM25MCA087-T</p>
+                    <p>debojyoti.mca25@bmsce.ac.in</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        window.onload = function() {
+            fetch('../api/dashboard_stats.php')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('count-flights').innerText = data.flights;
+                document.getElementById('count-bookings').innerText = data.bookings;
+                document.getElementById('count-passengers').innerText = data.passengers;
+                document.getElementById('count-airlines').innerText = data.airlines;
+            });
+        };
+    </script>
+</body>
+</html>

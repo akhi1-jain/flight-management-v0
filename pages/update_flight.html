@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Flight</title>
+    <style>
+        /* THEME: GREY & WHITE (Consistent) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .main-wrapper {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            align-items: flex-start;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            flex: 0 0 280px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #ddd;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 { font-size: 1.1em; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #333; }
+
+        .flight-list { list-style: none; padding: 0; margin: 0; }
+
+        .flight-item {
+            padding: 12px;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .flight-item:hover { background-color: #f9f9f9; color: #007bff; }
+        .flight-item strong { color: #333; }
+
+        /* MAIN CONTAINER */
+        .container {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        h2, h3 { text-align: center; color: #333; margin-top: 0; }
+
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; font-size: 0.9em; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus { outline: none; border-color: #333; background-color: #fff; }
+
+        /* SEARCH SECTION */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 25px;
+        }
+        .search-box input { margin-bottom: 0; flex: 1; }
+
+        .btn-search {
+            padding: 0 25px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-update {
+            width: 100%;
+            padding: 14px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .hidden { display: none; }
+        .back-link { display: block; margin-bottom: 20px; text-decoration: none; color: #666; font-size: 0.9em; }
+        #message { text-align: center; margin-top: 15px; font-weight: bold; }
+        .error { color: #dc3545; }
+        .success { color: #28a745; }
+    </style>
+</head>
+<body>
+    
+    <div class="main-wrapper">
+        <div class="sidebar">
+            <h3>Flights Reference</h3>
+            <ul id="flightList" class="flight-list">
+                <li style="color:#888;">Loading flights...</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <a href="admin.html" class="back-link">← Back to Dashboard</a>
+            <h2>Update Flight Details</h2>
+
+            <label>Find Flight Number:</label>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="e.g. 6E-501">
+                <button class="btn-search" onclick="findFlight()">Search</button>
+            </div>
+
+            <div id="editSection" class="hidden">
+                <h3>Edit Information</h3>
+                <form id="updateForm">
+                    <input type="hidden" name="flight_id" id="fid">
+
+                    <label>Flight Number</label>
+                    <input type="text" name="flight_number" id="fnum" required>
+
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex:1;">
+                            <label>Origin Airport</label>
+                            <select name="origin" id="originSelect" required></select>
+                        </div>
+                        <div style="flex:1;">
+                            <label>Destination Airport</label>
+                            <select name="destination" id="destSelect" required></select>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex:1;">
+                            <label>Departure Time</label>
+                            <input type="datetime-local" name="departure_time" id="dep" required>
+                        </div>
+                        <div style="flex:1;">
+                            <label>Arrival Time</label>
+                            <input type="datetime-local" name="arrival_time" id="arr" required>
+                        </div>
+                    </div>
+
+                    <label>Assigned Aircraft (Tail Number)</label>
+                    <select name="tail_number" id="tailSelect" required></select>
+
+                    <label>Ticket Price (INR)</label>
+                    <input type="number" step="0.01" name="price" id="prc" required>
+
+                    <button type="submit" class="btn-update">Save Changes</button>
+                </form>
+            </div>
+
+            <p id="message"></p>
+        </div>
+    </div>
+
+    <script>
+        let allFlights = [];
+
+        // 1. Fetch Airports/Aircrafts & Sidebar
+        window.onload = function() {
+            // Load Dropdown Options
+            fetch('../api/get_form_options.php')
+            .then(res => res.json())
+            .then(data => {
+                const origins = document.getElementById('originSelect');
+                const dests = document.getElementById('destSelect');
+                const tails = document.getElementById('tailSelect');
+
+                data.airports.forEach(a => {
+                    const opt = `<option value="${a.Airport_Code}">${a.City} (${a.Airport_Code})</option>`;
+                    origins.innerHTML += opt;
+                    dests.innerHTML += opt;
+                });
+
+                data.aircrafts.forEach(ac => {
+                    tails.innerHTML += `<option value="${ac.Tail_Number}">${ac.Model} (${ac.Tail_Number})</option>`;
+                });
+            });
+
+            loadSidebar();
+        };
+
+        function loadSidebar() {
+            fetch('../api/get_flight.php')
+            .then(res => res.json())
+            .then(data => {
+                allFlights = data;
+                const list = document.getElementById('flightList');
+                list.innerHTML = '';
+                data.forEach(f => {
+                    const li = document.createElement('li');
+                    li.className = 'flight-item';
+                    li.innerHTML = `<strong>${f.Flight_Number}</strong> <span>${f.Origin_Airport}➝${f.Destination_Airport}</span>`;
+                    li.onclick = () => {
+                        document.getElementById('searchInput').value = f.Flight_Number;
+                        findFlight();
+                    };
+                    list.appendChild(li);
+                });
+            });
+        }
+
+        // 2. Find Flight Logic
+        function findFlight() {
+            const input = document.getElementById('searchInput').value.trim().toUpperCase();
+            const msg = document.getElementById('message');
+            const editSection = document.getElementById('editSection');
+
+            const flight = allFlights.find(f => f.Flight_Number === input);
+
+            if (flight) {
+                msg.innerText = "";
+                editSection.classList.remove('hidden');
+                
+                document.getElementById('fid').value = flight.Flight_ID;
+                document.getElementById('fnum').value = flight.Flight_Number;
+                document.getElementById('originSelect').value = flight.Origin_Airport;
+                document.getElementById('destSelect').value = flight.Destination_Airport;
+                document.getElementById('dep').value = flight.Departure_Time.replace(" ", "T");
+                document.getElementById('arr').value = (flight.Arrival_Time) ? flight.Arrival_Time.replace(" ", "T") : ""; 
+                document.getElementById('tailSelect').value = flight.Tail_Number || ""; 
+                document.getElementById('prc').value = flight.Price;
+            } else {
+                editSection.classList.add('hidden');
+                msg.innerText = "Flight not found.";
+                msg.className = "error";
+            }
+        }
+
+        // 3. Submit Update
+        document.getElementById('updateForm').onsubmit = function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch('../api/update_flight.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(res => {
+                const msg = document.getElementById('message');
+                msg.innerText = res.message;
+                msg.className = (res.status === 'success') ? "success" : "error";
+                if(res.status === 'success') loadSidebar();
+            });
+        };
+    </script>
+</body>
+</html>

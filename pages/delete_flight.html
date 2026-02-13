@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Flight</title>
+    <style>
+        /* THEME: GREY & WHITE (Matches Dashboard & Update Page) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* FLEX WRAPPER */
+        .main-wrapper {
+            display: flex;
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            align-items: flex-start;
+        }
+
+        /* LEFT SIDEBAR: FLIGHT LIST */
+        .sidebar {
+            flex: 0 0 280px;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid #ddd;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 { font-size: 1.1em; margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; color: #333; }
+
+        .flight-list { list-style: none; padding: 0; margin: 0; }
+
+        .flight-item {
+            padding: 12px;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .flight-item:hover { background-color: #f9f9f9; color: #dc3545; }
+        .flight-item strong { color: #333; }
+
+        /* MAIN CONTAINER */
+        .container {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        h2, h3 { text-align: center; color: #333; margin-top: 0; }
+
+        /* WARNING BOX */
+        .warning-box {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ffeeba;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        /* SEARCH SECTION */
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 25px;
+        }
+        .search-box input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 6px; background-color: #fafafa; }
+
+        .btn-search {
+            padding: 0 25px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* DETAILS DISPLAY */
+        .details-box {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #eee;
+        }
+
+        .detail-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95em; }
+        .label { font-weight: bold; color: #555; }
+        .value { color: #000; font-weight: 600; }
+
+        /* DELETE BUTTON */
+        .btn-delete {
+            width: 100%;
+            padding: 14px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-delete:hover { background-color: #c82333; }
+
+        .hidden { display: none; }
+        .back-link { display: block; margin-bottom: 20px; text-decoration: none; color: #666; font-size: 0.9em; }
+        #message { text-align: center; margin-top: 15px; font-weight: bold; }
+        .error { color: #dc3545; }
+        .success { color: #28a745; }
+    </style>
+</head>
+<body>
+    
+
+    <div class="main-wrapper">
+        <div class="sidebar">
+            <h3>Quick Reference</h3>
+            <ul id="flightList" class="flight-list">
+                <li style="color:#888;">Loading...</li>
+            </ul>
+        </div>
+
+        <div class="container">
+            <a href="admin.html" class="back-link">← Back to Dashboard</a>
+            <h2>Delete Flight</h2>
+
+            <div class="warning-box">
+                <strong>⚠️ Attention:</strong> Deleting a flight is permanent. It will automatically cancel all tickets booked by passengers for this flight.
+            </div>
+
+            <label style="display:block; margin-bottom:8px; font-weight:600; color:#555; font-size:0.9em;">Enter Flight Number:</label>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="e.g. AI-504">
+                <button class="btn-search" onclick="findFlight()">Search</button>
+            </div>
+
+            <div id="deleteSection" class="hidden">
+                <h3>Confirm Deletion</h3>
+                <div class="details-box">
+                    <div class="detail-row"><span class="label">Flight No:</span> <span class="value" id="d_fnum"></span></div>
+                    <div class="detail-row"><span class="label">Route:</span> <span class="value" id="d_route"></span></div>
+                    <div class="detail-row"><span class="label">Departure:</span> <span class="value" id="d_time"></span></div>
+                    <div class="detail-row"><span class="label">Arrival:</span> <span class="value" id="d_arr"></span></div>
+                    <div class="detail-row"><span class="label">Price:</span> <span class="value" id="d_price"></span></div>
+                </div>
+                <button class="btn-delete" onclick="confirmDelete()">DELETE PERMANENTLY</button>
+            </div>
+
+            <p id="message"></p>
+        </div>
+    </div>
+
+    <script>
+        let allFlights = [];
+        let selectedFlightId = null;
+
+        // 1. Load Sidebar & Fetch Data
+        function loadSidebar() {
+            fetch('../api/get_flight.php')
+            .then(res => res.json())
+            .then(data => {
+                allFlights = data;
+                const list = document.getElementById('flightList');
+                list.innerHTML = '';
+                data.forEach(f => {
+                    const li = document.createElement('li');
+                    li.className = 'flight-item';
+                    li.innerHTML = `<strong>${f.Flight_Number}</strong> <span>${f.Origin_Airport}➝${f.Destination_Airport}</span>`;
+                    li.onclick = () => {
+                        document.getElementById('searchInput').value = f.Flight_Number;
+                        findFlight();
+                    };
+                    list.appendChild(li);
+                });
+            });
+        }
+
+        window.onload = loadSidebar;
+
+        // 2. Find Flight
+        function findFlight() {
+            const input = document.getElementById('searchInput').value.trim().toUpperCase();
+            const msg = document.getElementById('message');
+            const deleteSection = document.getElementById('deleteSection');
+
+            const flight = allFlights.find(f => f.Flight_Number === input);
+
+            if (flight) {
+                msg.innerText = "";
+                deleteSection.classList.remove('hidden');
+                selectedFlightId = flight.Flight_ID;
+
+                document.getElementById('d_fnum').innerText = flight.Flight_Number;
+                document.getElementById('d_route').innerText = `${flight.Origin_Airport} ➝ ${flight.Destination_Airport}`;
+                document.getElementById('d_time').innerText = flight.Departure_Time;
+                document.getElementById('d_arr').innerText = flight.Arrival_Time || "N/A";
+                document.getElementById('d_price').innerText = "₹" + flight.Price;
+            } else {
+                deleteSection.classList.add('hidden');
+                selectedFlightId = null;
+                msg.innerText = "Flight not found.";
+                msg.className = "error";
+            }
+        }
+
+        // 3. Confirm Delete
+        function confirmDelete() {
+            if(!selectedFlightId) return;
+
+            if(confirm("This will permanently remove the flight and cancel all bookings. Proceed?")) {
+                fetch('../api/delete_flight.php', {
+                    method: 'POST',
+                    body: JSON.stringify({ flight_id: selectedFlightId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const msg = document.getElementById('message');
+                    msg.innerText = data.message;
+                    msg.className = (data.status === 'success') ? "success" : "error";
+
+                    if(data.status === 'success') {
+                        document.getElementById('deleteSection').classList.add('hidden');
+                        document.getElementById('searchInput').value = "";
+                        loadSidebar(); // Refresh list
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>
