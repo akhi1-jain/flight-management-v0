@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMSCE Flight Management System</title>
+    <style>
+        /* THEME: GREY & WHITE (Professional & Clean) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        nav .nav-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.95em;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        nav .nav-links a:hover {
+            color: white;
+        }
+
+        nav .btn-login {
+            background-color: #007bff;
+            padding: 8px 18px;
+            border-radius: 4px;
+            color: white !important;
+            font-weight: bold;
+        }
+        nav .btn-login:hover { background-color: #0056b3; }
+
+        nav .btn-admin {
+            border: 1px solid #666;
+            padding: 7px 15px;
+            border-radius: 4px;
+        }
+        nav .btn-admin:hover { border-color: #fff; }
+
+
+        /* HERO SECTION */
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            background-position: center;
+            height: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero-content p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 15px 35px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            background-color: #218838;
+        }
+
+        /* FEATURES SECTION (Advertisement) */
+        .features {
+            padding: 60px 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .features h2 {
+            font-size: 2.2em;
+            margin-bottom: 50px;
+            color: #333;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+            border: 1px solid #eee;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #333;
+            color: #ccc;
+            padding: 40px 20px;
+            margin-top: auto;
+            text-align: center;
+        }
+
+        .footer-content p {
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        .dev-names {
+            margin-top: 15px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            BMSCE FLIGHTS
+        </div>
+        <div class="nav-links">
+            <a href="pages/register.html" class="btn-admin">Register</a>
+            <a href="pages/login.html" class="btn-login">Login</a>
+            <a href="pages/login.html" class="btn-admin">Admin Login</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Fly High with Comfort</h1>
+            <p>Experience seamless flight booking with BMSCE's premier flight management system. Your journey begins here.</p>
+            <a href="pages/login.html" class="cta-button">Book a Flight Now</a>
+        </div>
+    </div>
+
+    <div class="features">
+        <h2>Why Choose Us?</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Booking</h3>
+                <p>Book your tickets in seconds with our streamlined, user-friendly interface designed for speed and simplicity.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Secure & Reliable</h3>
+                <p>Your data is our top priority. We use advanced encryption to ensure your personal information stays safe.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>Global Reach</h3>
+                <p>Connecting you to major destinations across the globe with our extensive network of airline partners.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2026 BMS College of Engineering. All Rights Reserved.</p>
+            <p class="dev-names">Developed by: Akhil M Jain (1BM25MCA008-T) & Debojoti Bhattacharjee (1BM25MCA087-T)</p>
+            <p style="font-size: 0.8em; margin-top: 10px; color: #777;">MCA Semester 1 Project - Database Management System</p>
+        </div>
+    </footer>
+
+</body>
+</html>

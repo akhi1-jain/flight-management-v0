@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - BMSCE Flights</title>
+    <style>
+        /* THEME: GREY & WHITE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9em; }
+        nav .nav-links a:hover { color: white; }
+        nav .logo { font-size: 1.5em; font-weight: bold; letter-spacing: 1px; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: white;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .login-card h2 { margin-top: 0; color: #333; margin-bottom: 10px; }
+        .login-card p { color: #666; font-size: 0.9em; margin-bottom: 30px; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            font-size: 14px;
+        }
+
+        input:focus { outline: none; border-color: #333; background-color: #fff; }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-login:hover { background-color: #555; }
+
+        .message { margin-top: 15px; font-size: 0.9em; min-height: 1.2em; }
+        .error { color: #dc3545; font-weight: bold; }
+        .success { color: #28a745; font-weight: bold; }
+
+        .links { margin-top: 20px; font-size: 0.9em; }
+        .links a { color: #007bff; text-decoration: none; }
+        .links a:hover { text-decoration: underline; }
+
+        /* FOOTER */
+        footer {
+            background-color: #f1f1f1;
+            padding: 40px 20px;
+            border-top: 1px solid #ddd;
+        }
+        .footer-title { text-align: center; font-weight: bold; margin-bottom: 25px; color: #555; }
+        .dev-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .dev-card {
+            background: white; padding: 15px; border-radius: 10px; width: 300px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .dev-card img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
+        .dev-info h4 { margin: 0; font-size: 0.95em; }
+        .dev-info p { margin: 2px 0; font-size: 0.75em; color: #666; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">BMSCE FLIGHTS</div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="login-card">
+            <h2>Welcome Back</h2>
+            <p>Login to manage flights or book tickets.</p>
+
+            <form id="loginForm">
+                <input type="text" name="email" id="email" placeholder="Email or Username" required>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <button type="submit" class="btn-login" id="loginBtn">Login</button>
+            </form>
+
+            <div id="msg" class="message"></div>
+
+            <div class="links">
+                Don't have an account? <a href="register.html">Register Here</a><br>
+                <a href="../index.html" style="color:#666; font-size:0.85em; display:inline-block; margin-top:10px;">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-title">Developed By</div>
+        <div class="dev-grid">
+            <div class="dev-card">
+                <img src="../assets/images/akhil.jpg" alt="Akhil">
+                <div class="dev-info">
+                    <h4>Akhil M Jain</h4>
+                    <p>USN: 1BM25MCA008-T</p>
+                    <p>akhilmjain.mca25@bmsce.ac.in</p>
+                </div>
+            </div>
+            <div class="dev-card">
+                <img src="../assets/images/debojyoti.jpeg" alt="Debojoti">
+                <div class="dev-info">
+                    <h4>Debojoti Bhattacharjee</h4>
+                    <p>USN: 1BM25MCA087-T</p>
+                    <p>debojyoti.mca25@bmsce.ac.in</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('loginForm').onsubmit = function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('msg');
+            const btn = document.getElementById('loginBtn');
+
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            fetch('../api/login.php', {
+                method: 'POST',
+                body: JSON.stringify({
+                    email: document.getElementById('email').value,
+                    password: document.getElementById('password').value
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    msg.innerText = "Login Successful! Redirecting...";
+                    msg.className = "message success";
+                    
+                    if(data.name) localStorage.setItem('userName', data.name);
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect;
+                    }, 1000);
+                } else {
+                    msg.innerText = data.message;
+                    msg.className = "message error";
+                    btn.innerText = "Login";
+                    btn.disabled = false;
+                }
+            })
+            .catch(err => {
+                msg.innerText = "Connection Failed";
+                msg.className = "message error";
+                btn.innerText = "Login";
+                btn.disabled = false;
+            });
+        };
+    </script>
+    
+</body>
+</html>

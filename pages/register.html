@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passenger Registration - BMSCE Flights</title>
+    <style>
+        /* THEME: GREY & WHITE */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        nav .nav-links a { color: #ccc; text-decoration: none; font-size: 0.9em; }
+        nav .nav-links a:hover { color: white; }
+        nav .logo { font-size: 1.5em; font-weight: bold; letter-spacing: 1px; }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        h2 { text-align: center; margin-top: 0; color: #333; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 30px; }
+
+        label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9em; color: #555; }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: #fafafa;
+            font-size: 14px;
+        }
+
+        input:focus { outline: none; border-color: #333; background-color: #fff; }
+
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-register:hover { background-color: #555; }
+
+        #message { text-align: center; margin-top: 15px; font-weight: bold; font-size: 0.9em; }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+
+        /* FOOTER */
+        footer {
+            background-color: #f1f1f1;
+            padding: 40px 20px;
+            border-top: 1px solid #ddd;
+        }
+        .footer-title { text-align: center; font-weight: bold; margin-bottom: 25px; color: #555; }
+        .dev-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        .dev-card {
+            background: white; padding: 15px; border-radius: 10px; width: 300px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid #eee;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .dev-card img { width: 55px; height: 55px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
+        .dev-info h4 { margin: 0; font-size: 0.95em; }
+        .dev-info p { margin: 2px 0; font-size: 0.75em; color: #666; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">BMSCE FLIGHTS</div>
+        <div class="nav-links">
+            <a href="../index.html">Home</a>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="form-container">
+            <h2>Passenger Registration</h2>
+            <p class="subtitle">Create an account to book flights effortlessly.</p>
+            
+            <form id="registerForm">
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label>First Name</label>
+                        <input type="text" name="first_name" placeholder="Akhil" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Last Name</label>
+                        <input type="text" name="last_name" placeholder="Jain" required>
+                    </div>
+                </div>
+
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="akhil@example.com" required>
+
+                <label>Password</label>
+                <input type="password" name="password" placeholder="Create a password" required>
+
+                <button type="submit" class="btn-register">Sign Up</button>
+            </form>
+            
+            <p id="message"></p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-title">Developed By</div>
+        <div class="dev-grid">
+            <div class="dev-card">
+                <img src="../assets/images/akhil.jpg" alt="Akhil">
+                <div class="dev-info">
+                    <h4>Akhil M Jain</h4>
+                    <p>USN: 1BM25MCA008-T</p>
+                    <p>akhilmjain.mca25@bmsce.ac.in</p>
+                </div>
+            </div>
+            <div class="dev-card">
+                <img src="../assets/images/debojyoti.jpeg" alt="Debojoti">
+                <div class="dev-info">
+                    <h4>Debojoti Bhattacharjee</h4>
+                    <p>USN: 1BM25MCA087-T</p>
+                    <p>debojyoti.mca25@bmsce.ac.in</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('registerForm').onsubmit = function(e) {
+            e.preventDefault();
+            const msgBox = document.getElementById('message');
+            const btn = document.querySelector('.btn-register');
+            
+            btn.innerText = "Registering...";
+            btn.disabled = true;
+
+            fetch('../api/register.php', {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(res => res.json())
+            .then(data => {
+                msgBox.innerText = data.message;
+                msgBox.className = data.status === 'success' ? 'success' : 'error';
+                
+                btn.innerText = "Sign Up";
+                btn.disabled = false;
+
+                if(data.status === 'success') {
+                    this.reset();
+                    // Optional: Redirect to booking page after 2 seconds
+                    setTimeout(() => window.location.href = 'book_ticket.html', 2000);
+                }
+            })
+            .catch(err => {
+                msgBox.innerText = "Error connecting to server";
+                msgBox.className = 'error';
+                btn.innerText = "Sign Up";
+                btn.disabled = false;
+            });
+        };
+    </script>
+</body>
+</html>

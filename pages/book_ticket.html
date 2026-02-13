@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find & Book Flights - BMSCE</title>
+    <style>
+        /* THEME: GREY & WHITE */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f4; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* NAVBAR */
+        nav { background-color: #333; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        nav .logo { font-size: 1.5em; font-weight: bold; letter-spacing: 1px; }
+        nav a { color: #ccc; text-decoration: none; margin-left: 20px; font-size: 0.9em; }
+        nav a:hover { color: white; }
+
+        /* SEARCH HERO SECTION */
+        .hero {
+            background-color: #333;
+            color: white;
+            padding: 40px 20px 60px 20px;
+            text-align: center;
+        }
+        .search-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            display: inline-flex;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .input-group { text-align: left; }
+        .input-group label { display: block; font-size: 0.8em; color: #555; font-weight: bold; margin-bottom: 5px; }
+        select, input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 180px; }
+        
+        .btn-search {
+            padding: 11px 25px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-search:hover { background-color: #218838; }
+
+        /* RESULTS AREA */
+        .results-container {
+            max-width: 1000px;
+            margin: -30px auto 40px auto; /* Pulls it up into the hero */
+            padding: 0 20px;
+            flex: 1;
+        }
+
+        .flight-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .flight-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        .route-info h3 { margin: 0 0 5px 0; color: #333; }
+        .route-info p { margin: 0; color: #777; font-size: 0.9em; }
+        .price-tag { font-size: 1.4em; font-weight: bold; color: #28a745; }
+        
+        .btn-select {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+
+        /* BOOKING MODAL */
+        .modal {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center; align-items: center;
+            z-index: 1000; /* Ensure it sits on top */
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        .modal-content input { width: 90%; margin-bottom: 15px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        .modal-content button { width: 100%; padding: 12px; margin-top: 5px; cursor: pointer; background-color: #28a745; color: white; border: none; font-weight: bold; border-radius: 4px; }
+        .close { float: right; cursor: pointer; font-size: 1.5em; margin-top: -10px; color: #999; }
+        .close:hover { color: #333; }
+
+        /* FOOTER */
+        footer { background-color: #f1f1f1; padding: 20px; border-top: 1px solid #ddd; text-align: center; font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">BMSCE FLIGHTS</div>
+        <div>
+            <a href="../index.html">Logout</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <h2>Where do you want to go?</h2>
+        <div class="search-container">
+            <div class="input-group">
+                <label>From</label>
+                <select id="searchOrigin"><option value="">All Origins</option></select>
+            </div>
+            <div class="input-group">
+                <label>To</label>
+                <select id="searchDest"><option value="">All Destinations</option></select>
+            </div>
+            <div class="input-group">
+                <label>Date</label>
+                <input type="date" id="searchDate">
+            </div>
+            <button class="btn-search" onclick="searchFlights()">Find Flights</button>
+        </div>
+    </div>
+
+    <div class="results-container" id="resultsArea">
+        <p style="text-align:center; color:#666; margin-top: 50px;">Loading flights...</p>
+    </div>
+
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h3 id="modalFlightTitle">Confirm Booking</h3>
+            <p style="font-size:0.9em; color:#666; margin-bottom: 20px;">Enter your registered email to proceed.</p>
+            
+            <form id="confirmForm">
+                <input type="hidden" id="modalFlightId" name="flight_id">
+                <input type="email" id="userEmail" placeholder="Registered Email (e.g. akhil@example.com)" required>
+                <input type="text" id="userSeat" placeholder="Seat Preference (e.g. 12A)">
+                <button type="submit">Book Ticket</button>
+            </form>
+            <p id="bookMsg" style="margin-top: 10px; font-weight: bold;"></p>
+        </div>
+    </div>
+
+    <script>
+        let allFlights = [];
+
+        // 1. Load Data on Start
+        window.onload = function() {
+            // Populate Dropdowns
+            fetch('../api/get_form_options.php').then(r=>r.json()).then(data => {
+                const org = document.getElementById('searchOrigin');
+                const dst = document.getElementById('searchDest');
+                
+                // Use a Set to avoid duplicate cities in dropdown if multiple airports exist
+                data.airports.forEach(a => {
+                    const opt = `<option value="${a.Airport_Code}">${a.City} (${a.Airport_Code})</option>`;
+                    org.innerHTML += opt;
+                    dst.innerHTML += opt;
+                });
+            });
+
+            // Fetch All Flights & Render Immediately
+            fetch('../api/get_flight.php').then(r=>r.json()).then(data => {
+                // Sort by Departure Time (Earliest first)
+                allFlights = data.sort((a, b) => new Date(a.Departure_Time) - new Date(b.Departure_Time));
+                
+                // Render everything initially
+                renderFlights(allFlights); 
+            });
+        };
+
+        // 2. Search Logic
+        function searchFlights() {
+            const org = document.getElementById('searchOrigin').value;
+            const dst = document.getElementById('searchDest').value;
+            const dateInput = document.getElementById('searchDate').value; // YYYY-MM-DD
+
+            const filtered = allFlights.filter(f => {
+                // Match Origin (if selected)
+                const matchOrg = (org === "" || f.Origin_Airport === org);
+                // Match Destination (if selected)
+                const matchDst = (dst === "" || f.Destination_Airport === dst);
+                // Match Date (if selected) - Compare just the date part string
+                const matchDate = (dateInput === "" || f.Departure_Time.startsWith(dateInput));
+
+                return matchOrg && matchDst && matchDate;
+            });
+
+            renderFlights(filtered);
+        }
+
+        // 3. Render Helper
+        function renderFlights(data) {
+            const container = document.getElementById('resultsArea');
+            container.innerHTML = ""; // Clear previous
+
+            if(data.length === 0) {
+                container.innerHTML = "<p style='text-align:center; margin-top:30px; color:#666;'>No flights found matching your criteria.</p>";
+                return;
+            }
+
+            data.forEach(f => {
+                container.innerHTML += `
+                    <div class="flight-card">
+                        <div class="route-info">
+                            <h3>${f.Flight_Number}</h3>
+                            <p><strong>${f.Airline_Name}</strong></p>
+                            <p style="color:#555;">${f.Origin_Airport} ➝ ${f.Destination_Airport}</p>
+                            <p style="font-size:0.85em; color:#888;">Departs: ${f.Departure_Time}</p>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="price-tag">₹${f.Price}</div>
+                            <button class="btn-select" onclick="openBookModal(${f.Flight_ID}, '${f.Flight_Number}')">Book</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 4. Modal Logic
+        function openBookModal(id, num) {
+            document.getElementById('bookingModal').style.display = 'flex';
+            document.getElementById('modalFlightId').value = id;
+            document.getElementById('modalFlightTitle').innerText = "Booking Flight " + num;
+            document.getElementById('bookMsg').innerText = "";
+        }
+
+        function closeModal() {
+            document.getElementById('bookingModal').style.display = 'none';
+        }
+
+        // 5. Submit Booking (FIXED)
+        document.getElementById('confirmForm').onsubmit = function(e) {
+            e.preventDefault();
+            const msg = document.getElementById('bookMsg');
+            const btn = this.querySelector('button');
+            
+            // Disable button to prevent double clicks
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            // Prepare Data as JSON
+            const payload = {
+                flight_id: document.getElementById('modalFlightId').value,
+                email: document.getElementById('userEmail').value,
+                seat: document.getElementById('userSeat').value
+            };
+
+            fetch('../api/book_ticket.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                msg.innerText = data.message;
+                
+                if(data.status === 'success') {
+                    msg.style.color = 'green';
+                    alert("Success: " + data.message); // Explicit alert for user
+                    setTimeout(() => {
+                        closeModal();
+                        document.getElementById('confirmForm').reset();
+                    }, 1500);
+                } else {
+                    msg.style.color = 'red';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                msg.innerText = "Server Error. Check console.";
+                msg.style.color = 'red';
+            })
+            .finally(() => {
+                btn.innerText = "Book Ticket";
+                btn.disabled = false;
+            });
+        };
+    </script>
+</body>
+</html>
